@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "test": "npm run compile && npx mocha --timeout 5000 --exit --recursive test",
+    "unstoppable": "npm run compile && npx mocha --timeout 5000 --exit test/unstoppable/unstoppable.challenge.js",
+    "truster": "npm run compile && npx mocha --timeout 5000 --exit test/truster/truster.challenge.js",
+    "naive-receiver": "npm run compile && npx mocha --timeout 5000 --exit test/naive-receiver/naive-receiver.challenge.js",
+    "side-entrance": "npm run compile && npx mocha --timeout 5000 --exit test/side-entrance/side-entrance.challenge.js",
+    "the-rewarder": "npm run compile && npx mocha --timeout 5000 --exit test/the-rewarder/the-rewarder.challenge.js",
+    "selfie": "npm run compile && npx mocha --timeout 5000 --exit test/selfie/selfie.challenge.js",
+    "compromised": "npm run compile && npx mocha --timeout 5000 --exit test/compromised/compromised.challenge.js",
+    "puppet": "npm run compile && npx mocha --timeout 5000 --exit test/puppet/puppet.challenge.js",
+    "compile": "npx buidler compile"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@nomiclabs/buidler": "1.4.7",
+    "@openzeppelin/contracts": "3.0.0",
+    "@openzeppelin/test-environment": "0.1.3",
+    "@openzeppelin/test-helpers": "0.5.5",
+    "mocha": "7.1.1"
+  }
+}
