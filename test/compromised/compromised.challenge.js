@@ -44,9 +44,6 @@ describe('Compromised challenge', function () {
             { from: deployer, value: EXCHANGE_INITIAL_ETH_BALANCE }
         );
         this.token = await DamnValuableNFT.at(await this.exchange.token());
-
-        // Keep track of attacker's initial ETH balance
-        this.initialAttackerbalance = await balance.current(attacker);
     });
 
     it('Exploit', async function () {
@@ -58,5 +55,8 @@ describe('Compromised challenge', function () {
         expect(
             await balance.current(this.exchange.address)
         ).to.be.bignumber.eq('0');
+        expect(
+            await balance.current(attacker)
+        ).to.be.bignumber.gt(EXCHANGE_INITIAL_ETH_BALANCE);
     });
 });
