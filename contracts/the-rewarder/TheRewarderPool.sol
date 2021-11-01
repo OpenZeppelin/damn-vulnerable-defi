@@ -1,9 +1,16 @@
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
 
 import "./RewardToken.sol";
 import "../DamnValuableToken.sol";
 import "./AccountingToken.sol";
 
+/**
+ * @title TheRewarderPool
+ * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
+
+ */
 contract TheRewarderPool {
 
     // Minimum duration of each round of rewards in seconds
@@ -15,19 +22,19 @@ contract TheRewarderPool {
     mapping(address => uint256) public lastRewardTimestamps;
 
     // Token deposited into the pool by users
-    DamnValuableToken public liquidityToken;
+    DamnValuableToken public immutable liquidityToken;
 
     // Token used for internal accounting and snapshots
     // Pegged 1:1 with the liquidity token
     AccountingToken public accToken;
     
     // Token in which rewards are issued
-    RewardToken public rewardToken;
+    RewardToken public immutable rewardToken;
 
     // Track number of rounds
     uint256 public roundNumber;
 
-    constructor(address tokenAddress) public {
+    constructor(address tokenAddress) {
         // Assuming all three tokens have 18 decimals
         liquidityToken = DamnValuableToken(tokenAddress);
         accToken = new AccountingToken();
@@ -56,7 +63,7 @@ contract TheRewarderPool {
     }
 
     function distributeRewards() public returns (uint256) {
-        uint256 rewardInWei = 0;
+        uint256 rewards = 0;
 
         if(isNewRewardsRound()) {
             _recordSnapshot();
@@ -65,17 +72,16 @@ contract TheRewarderPool {
         uint256 totalDeposits = accToken.totalSupplyAt(lastSnapshotIdForRewards);
         uint256 amountDeposited = accToken.balanceOfAt(msg.sender, lastSnapshotIdForRewards);
 
-        if (totalDeposits > 0) {
-            uint256 reward = (amountDeposited * 100) / totalDeposits;
+        if (amountDeposited > 0 && totalDeposits > 0) {
+            rewards = (amountDeposited * 100 * 10 ** 18) / totalDeposits;
 
-            if(reward > 0 && !_hasRetrievedReward(msg.sender)) {                
-                rewardInWei = reward * 10 ** 18;
-                rewardToken.mint(msg.sender, rewardInWei);
+            if(rewards > 0 && !_hasRetrievedReward(msg.sender)) {
+                rewardToken.mint(msg.sender, rewards);
                 lastRewardTimestamps[msg.sender] = block.timestamp;
             }
         }
 
-        return rewardInWei;     
+        return rewards;     
     }
 
     function _recordSnapshot() private {

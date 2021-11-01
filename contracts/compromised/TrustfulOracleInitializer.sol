@@ -1,8 +1,12 @@
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "./TrustfulOracle.sol";
 
+/**
+ * @title TrustfulOracleInitializer
+ * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
+ */
 contract TrustfulOracleInitializer {
 
     event NewTrustfulOracle(address oracleAddress);
@@ -13,7 +17,7 @@ contract TrustfulOracleInitializer {
         address[] memory sources,
         string[] memory symbols,
         uint256[] memory initialPrices
-    ) public
+    )
     {
         oracle = new TrustfulOracle(sources, true);
         oracle.setupInitialPrices(sources, symbols, initialPrices);
