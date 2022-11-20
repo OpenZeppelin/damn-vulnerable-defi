@@ -1,24 +1,27 @@
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./TrustfulOracle.sol";
-import "./DamnValuableNFT.sol";
+import "../DamnValuableNFT.sol";
 
+/**
+ * @title Exchange
+ * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
+ */
 contract Exchange is ReentrancyGuard {
 
-    using SafeMath for uint256;
     using Address for address payable;
 
-    DamnValuableNFT public token;
-    TrustfulOracle public oracle;
+    DamnValuableNFT public immutable token;
+    TrustfulOracle public immutable oracle;
 
     event TokenBought(address indexed buyer, uint256 tokenId, uint256 price);
     event TokenSold(address indexed seller, uint256 tokenId, uint256 price);
 
-    constructor(address oracleAddress) public payable {
+    constructor(address oracleAddress) payable {
         token = new DamnValuableNFT();
         oracle = TrustfulOracle(oracleAddress);
     }
@@ -31,9 +34,9 @@ contract Exchange is ReentrancyGuard {
         uint256 currentPriceInWei = oracle.getMedianPrice(token.symbol());
         require(amountPaidInWei >= currentPriceInWei, "Amount paid is not enough");
 
-        uint256 tokenId = token.mint(msg.sender);
+        uint256 tokenId = token.safeMint(msg.sender);
         
-        msg.sender.sendValue(amountPaidInWei - currentPriceInWei);
+        payable(msg.sender).sendValue(amountPaidInWei - currentPriceInWei);
 
         emit TokenBought(msg.sender, tokenId, currentPriceInWei);
 
@@ -51,7 +54,7 @@ contract Exchange is ReentrancyGuard {
         token.transferFrom(msg.sender, address(this), tokenId);
         token.burn(tokenId);
         
-        msg.sender.sendValue(currentPriceInWei);
+        payable(msg.sender).sendValue(currentPriceInWei);
 
         emit TokenSold(msg.sender, tokenId, currentPriceInWei);
     }

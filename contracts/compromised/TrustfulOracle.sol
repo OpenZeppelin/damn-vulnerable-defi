@@ -1,14 +1,16 @@
-pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
+// SPDX-License-Identifier: MIT
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 /**
- *
- * A price oracle with a number of trusted sources that individually report prices for symbols.
- * The oracle's price for a given symbol is the median price of the symbol over all sources.
+ * @title TrustfulOracle
+ * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
+ * @notice A price oracle with a number of trusted sources that individually report prices for symbols.
+ *         The oracle's price for a given symbol is the median price of the symbol over all sources.
  */
-contract TrustfulOracle is AccessControl {
+contract TrustfulOracle is AccessControlEnumerable {
 
     bytes32 public constant TRUSTED_SOURCE_ROLE = keccak256("TRUSTED_SOURCE_ROLE");
     bytes32 public constant INITIALIZER_ROLE = keccak256("INITIALIZER_ROLE");
@@ -33,7 +35,7 @@ contract TrustfulOracle is AccessControl {
         uint256 newPrice
     );
 
-    constructor(address[] memory sources, bool enableInitialization) public {
+    constructor(address[] memory sources, bool enableInitialization) {
         require(sources.length > 0);
         for(uint256 i = 0; i < sources.length; i++) {
             _setupRole(TRUSTED_SOURCE_ROLE, sources[i]);
