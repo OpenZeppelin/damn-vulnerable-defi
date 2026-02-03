@@ -29,7 +29,7 @@ describe('[Challenge] Puppet', function () {
     const UNISWAP_INITIAL_ETH_RESERVE = ether('10');
 
     const POOL_INITIAL_TOKEN_BALANCE = ether('10000');
-    const ATTACKER_INITAL_TOKEN_BALANCE = ether('100');
+    const ATTACKER_INITIAL_TOKEN_BALANCE = ether('100');
 
     before(async function () {
         /** SETUP SCENARIO */
@@ -81,14 +81,14 @@ describe('[Challenge] Puppet', function () {
         );
 
         // Setup initial token balances of pool and attacker account
-        await this.token.transfer(attacker, ATTACKER_INITAL_TOKEN_BALANCE, { from: deployer });
+        await this.token.transfer(attacker, ATTACKER_INITIAL_TOKEN_BALANCE, { from: deployer });
         await this.token.transfer(this.lendingPool.address, POOL_INITIAL_TOKEN_BALANCE, { from: deployer });
 
         // Rate should be 1:1
         expect(await this.lendingPool.computeOraclePrice()).to.be.bignumber.eq('1');
 
         // Track attacker's initial ETH balance (to ensure it doesn't decrease)
-        this.intialAttackerEthBalance = await balance.current(attacker);
+        this.initialAttackerEthBalance = await balance.current(attacker);
     });
 
     it('Exploit', async function () {
@@ -109,6 +109,6 @@ describe('[Challenge] Puppet', function () {
         // Attacker ETH balance has not decreased
         expect(
             await balance.current(attacker)
-        ).to.be.bignumber.gte(this.intialAttackerEthBalance);
+        ).to.be.bignumber.gte(this.initialAttackerEthBalance);
     });
 });
