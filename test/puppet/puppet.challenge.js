@@ -37,7 +37,7 @@ describe('[Challenge] Puppet', function () {
         // Deploy token to be traded in Uniswap
         this.token = await DamnValuableToken.new({ from: deployer });
 
-        // Deploy a exchange that will be used as the factory template
+        // Deploy an exchange that will be used as the factory template
         this.exchangeTemplate = await UniswapExchange.new({from: deployer});
 
         // Deploy factory, initializing it with the address of the template exchange
